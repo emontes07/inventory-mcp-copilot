@@ -1,0 +1,27 @@
+<section class="widget reorder-list">
+  <header class="widget-header">
+    <div>
+      <p class="eyebrow">Replenishment</p>
+      <h2>Reorder recommendations</h2>
+    </div>
+  </header>
+
+  <div class="table-like">
+    {% for item in recommendations %}
+    <article class="table-row">
+      <div>
+        <strong>{{ item.name }}</strong>
+        <p class="subtle">{{ item.id }} · Supplier {{ item.supplier_id }}</p>
+      </div>
+      <div class="row-metrics">
+        <span>Stock {{ item.stock_level }}</span>
+        <span>Reorder {{ item.reorder_level }}</span>
+        <span>On order {{ item.units_on_order }}</span>
+        <span class="accent">Suggested {{ item.suggested_order_qty }}</span>
+      </div>
+    </article>
+    {% else %}
+    <p class="subtle">No current reorder recommendations.</p>
+    {% endfor %}
+  </div>
+</section>

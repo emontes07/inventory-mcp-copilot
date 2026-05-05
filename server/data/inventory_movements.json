@@ -1,0 +1,50 @@
+[
+  {
+    "movement_id": "MOV-0001",
+    "product_id": "P-1001",
+    "type": "sale",
+    "quantity": -6,
+    "reference_id": "SO-5012",
+    "occurred_at": "2026-05-01T10:15:00Z"
+  },
+  {
+    "movement_id": "MOV-0002",
+    "product_id": "P-1004",
+    "type": "sale",
+    "quantity": -4,
+    "reference_id": "SO-5018",
+    "occurred_at": "2026-05-01T14:40:00Z"
+  },
+  {
+    "movement_id": "MOV-0003",
+    "product_id": "P-1006",
+    "type": "adjustment",
+    "quantity": -1,
+    "reference_id": "ADJ-102",
+    "occurred_at": "2026-05-02T09:05:00Z"
+  },
+  {
+    "movement_id": "MOV-0004",
+    "product_id": "P-1003",
+    "type": "receipt",
+    "quantity": 8,
+    "reference_id": "PO-2209",
+    "occurred_at": "2026-05-02T13:20:00Z"
+  },
+  {
+    "movement_id": "MOV-0005",
+    "product_id": "P-1001",
+    "type": "receipt",
+    "quantity": 12,
+    "reference_id": "PO-2210",
+    "occurred_at": "2026-05-03T08:45:00Z"
+  },
+  {
+    "movement_id": "MOV-0006",
+    "product_id": "P-1005",
+    "type": "sale",
+    "quantity": -9,
+    "reference_id": "SO-5031",
+    "occurred_at": "2026-05-03T15:10:00Z"
+  }
+]

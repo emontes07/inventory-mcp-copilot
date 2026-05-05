@@ -1,0 +1,29 @@
+<section class="widget edit-product" data-product-id="{{ product.id }}">
+  <header class="widget-header">
+    <div>
+      <p class="eyebrow">Placeholder form</p>
+      <h2>Edit {{ product.name }}</h2>
+    </div>
+    <span class="status-pill">Read-only scaffold</span>
+  </header>
+
+  <form class="inventory-form">
+    <label>
+      Product name
+      <input type="text" value="{{ product.name }}" disabled />
+    </label>
+    <label>
+      Stock level
+      <input type="number" value="{{ product.stock_level }}" disabled />
+    </label>
+    <label>
+      Reorder level
+      <input type="number" value="{{ product.reorder_level }}" disabled />
+    </label>
+    <label>
+      Unit price
+      <input type="text" value="{{ "%.2f"|format(product.unit_price) }}" disabled />
+    </label>
+    <p class="subtle">This form is present to define the widget contract for future Copilot actions.</p>
+  </form>
+</section>

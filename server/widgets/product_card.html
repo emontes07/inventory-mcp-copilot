@@ -1,0 +1,39 @@
+<section class="widget product-card" data-product-id="{{ product.id }}">
+  <header class="widget-header">
+    <div>
+      <p class="eyebrow">{{ product.category }}</p>
+      <h2>{{ product.name }}</h2>
+      <p class="subtle">{{ product.sku }}</p>
+    </div>
+    <span class="status-pill {% if product.stock_level <= product.reorder_level %}status-warning{% else %}status-ok{% endif %}">
+      {% if product.stock_level <= product.reorder_level %}Reorder recommended{% else %}In stock{% endif %}
+    </span>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat">
+      <span>Stock level</span>
+      <strong>{{ product.stock_level }}</strong>
+    </div>
+    <div class="stat">
+      <span>Reorder level</span>
+      <strong>{{ product.reorder_level }}</strong>
+    </div>
+    <div class="stat">
+      <span>Units on order</span>
+      <strong>{{ product.units_on_order }}</strong>
+    </div>
+    <div class="stat">
+      <span>Unit price</span>
+      <strong>${{ "%.2f"|format(product.unit_price) }}</strong>
+    </div>
+    <div class="stat">
+      <span>Avg. discount</span>
+      <strong>{{ "%.0f"|format(product.average_discount * 100) }}%</strong>
+    </div>
+    <div class="stat">
+      <span>Revenue this period</span>
+      <strong>${{ "%.2f"|format(product.revenue_this_period) }}</strong>
+    </div>
+  </div>
+</section>

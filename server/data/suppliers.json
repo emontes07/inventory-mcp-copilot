@@ -1,0 +1,29 @@
+[
+  {
+    "id": "SUP-001",
+    "name": "Evergreen Imports",
+    "contact_name": "Mina Patel",
+    "email": "mina.patel@evergreen-imports.example",
+    "phone": "+1-555-0101",
+    "country": "USA",
+    "lead_time_days": 5
+  },
+  {
+    "id": "SUP-002",
+    "name": "Harbor Wholesale",
+    "contact_name": "Julian Torres",
+    "email": "julian.torres@harbor-wholesale.example",
+    "phone": "+1-555-0102",
+    "country": "Canada",
+    "lead_time_days": 9
+  },
+  {
+    "id": "SUP-003",
+    "name": "Northern Pantry Co.",
+    "contact_name": "Avery Chen",
+    "email": "avery.chen@northernpantry.example",
+    "phone": "+1-555-0103",
+    "country": "USA",
+    "lead_time_days": 7
+  }
+]
