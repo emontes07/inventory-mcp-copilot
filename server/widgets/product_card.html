@@ -1,61 +1,123 @@
 <section class="widget product-card" data-product-id="{{ product.id }}">
-  <header class="widget-header">
-    <div>
-      <p class="eyebrow">{{ product.category }} · {{ product.subcategory }}</p>
-      <h2>{{ product.product_name }}</h2>
-      <p class="subtle">{{ product.sku }} · {{ product.color }} · {{ product.size_range }}</p>
+  {% set raw_status = product.stock_status|lower %}
+  {% if raw_status in ["out", "out-of-stock", "out of stock"] or product.stock_level <= 0 %}
+    {% set status_label = "Out of stock" %}
+    {% set status_class = "status-critical" %}
+  {% elif raw_status in ["low", "reorder-soon", "reorder soon", "low stock"] or product.stock_level <= product.reorder_level %}
+    {% set status_label = "Low stock" %}
+    {% set status_class = "status-warning" %}
+  {% else %}
+    {% set status_label = "In stock" %}
+    {% set status_class = "status-ok" %}
+  {% endif %}
+
+  <header class="widget-header product-card-header">
+    <div class="product-card-title-block">
+      <p class="eyebrow">Inventory IQ · Zava Athletic Supply</p>
+      <div class="product-card-title-row">
+        <h2>{{ product.product_name }}</h2>
+        <span class="status-pill {{ status_class }}">{{ status_label }}</span>
+      </div>
+      <p class="product-card-sku">{{ product.sku }}</p>
+      <div class="product-chip-row">
+        <span class="product-chip">{{ product.category }}</span>
+        <span class="product-chip">{{ product.subcategory }}</span>
+        <span class="product-chip">{{ product.color }}</span>
+        <span class="product-chip">{{ product.size_range }}</span>
+      </div>
     </div>
-    <span class="status-pill {% if product.stock_level <= product.reorder_level %}status-warning{% else %}status-ok{% endif %}">
-      {{ product.stock_status|replace("-", " ")|title }}
-    </span>
   </header>
 
-  <div class="stats-grid">
-    <div class="stat">
-      <span>Channel</span>
-      <strong>{{ product.channel }}</strong>
-    </div>
-    <div class="stat">
-      <span>Season</span>
-      <strong>{{ product.season }}</strong>
-    </div>
-    <div class="stat">
-      <span>Supplier</span>
-      <strong>{{ product.supplier_name }}</strong>
-    </div>
-    <div class="stat">
-      <span>Stock level</span>
-      <strong>{{ product.stock_level }}</strong>
-    </div>
-    <div class="stat">
-      <span>Reorder level</span>
-      <strong>{{ product.reorder_level }}</strong>
-    </div>
-    <div class="stat">
-      <span>Units on order</span>
-      <strong>{{ product.units_on_order }}</strong>
-    </div>
-    <div class="stat">
-      <span>Unit price</span>
-      <strong>${{ "%.2f"|format(product.unit_price) }}</strong>
-    </div>
-    <div class="stat">
-      <span>Avg. discount</span>
-      <strong>{{ "%.0f"|format(product.average_discount * 100) }}%</strong>
-    </div>
-    <div class="stat">
-      <span>Sell-through</span>
-      <strong>{{ "%.0f"|format(product.sell_through_rate * 100) }}%</strong>
-    </div>
-    <div class="stat">
-      <span>Inventory valuation</span>
-      <strong>${{ "%.2f"|format(product.inventory_valuation) }}</strong>
-    </div>
-    <div class="stat">
-      <span>Revenue this period</span>
-      <strong>${{ "%.2f"|format(product.revenue_this_period) }}</strong>
-    </div>
+  <div class="product-card-layout">
+    <section class="product-summary-panel">
+      <div class="summary-panel-header">
+        <div>
+          <p class="eyebrow">Merchandising context</p>
+          <h3>Product snapshot</h3>
+        </div>
+      </div>
+
+      <dl class="detail-grid">
+        <div class="detail-item">
+          <dt>Season</dt>
+          <dd>{{ product.season }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Supplier</dt>
+          <dd>{{ product.supplier_name }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Channel</dt>
+          <dd>{{ product.channel }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Color</dt>
+          <dd>{{ product.color }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Size range</dt>
+          <dd>{{ product.size_range }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Status</dt>
+          <dd>{{ status_label }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="product-metrics-panel">
+      <div class="summary-panel-header">
+        <div>
+          <p class="eyebrow">Inventory metrics</p>
+          <h3>Stock and commercial performance</h3>
+        </div>
+      </div>
+
+      <div class="stats-grid product-stats-grid">
+        <div class="stat stat-emphasis">
+          <span>Stock level</span>
+          <strong>{{ product.stock_level }}</strong>
+        </div>
+        <div class="stat">
+          <span>Units on order</span>
+          <strong>{{ product.units_on_order }}</strong>
+        </div>
+        <div class="stat">
+          <span>Reorder level</span>
+          <strong>{{ product.reorder_level }}</strong>
+        </div>
+        <div class="stat">
+          <span>Unit price</span>
+          <strong>${{ "%.2f"|format(product.unit_price) }}</strong>
+        </div>
+        <div class="stat">
+          <span>Avg. discount</span>
+          <strong>{{ "%.0f"|format(product.average_discount * 100) }}%</strong>
+        </div>
+        <div class="stat">
+          <span>Inventory valuation</span>
+          <strong>${{ "%.2f"|format(product.inventory_valuation) }}</strong>
+        </div>
+        <div class="stat">
+          <span>Revenue this period</span>
+          <strong>${{ "%.2f"|format(product.revenue_this_period) }}</strong>
+        </div>
+        <div class="stat">
+          <span>Sell-through rate</span>
+          <strong>{{ "%.0f"|format(product.sell_through_rate * 100) }}%</strong>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <p class="subtle">{{ product.recommended_action }}</p>
+  <section class="recommendation-panel">
+    <p class="eyebrow">Recommended action</p>
+    <p class="recommendation-copy">{{ product.recommended_action }}</p>
+  </section>
+
+  <div class="action-row" aria-label="Placeholder actions">
+    <button type="button" class="action-button action-button-primary">Restock</button>
+    <button type="button" class="action-button">Edit product</button>
+    <button type="button" class="action-button">View supplier</button>
+  </div>
 </section>
