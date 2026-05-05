@@ -28,11 +28,14 @@ def register_order_tools(mcp: Any, render_widget: Callable[..., str]) -> None:
                 candidates.append(
                     {
                         "id": product["id"],
-                        "name": product["name"],
+                        "product_name": product["product_name"],
                         "supplier_id": product["supplier_id"],
+                        "supplier_name": product["supplier_name"],
                         "stock_level": product["stock_level"],
                         "reorder_level": product["reorder_level"],
                         "units_on_order": product["units_on_order"],
+                        "stock_status": product["stock_status"],
+                        "recommended_action": product["recommended_action"],
                         "suggested_order_qty": max(gap + 10 - product["units_on_order"], 0),
                     }
                 )
@@ -93,7 +96,9 @@ def register_order_tools(mcp: Any, render_widget: Callable[..., str]) -> None:
             "status": "draft",
             "purchase_order": {
                 "product_id": product_id,
+                "product_name": product["product_name"],
                 "supplier_id": product["supplier_id"],
+                "supplier_name": product["supplier_name"],
                 "suggested_units": suggested_units,
                 "unit_price": product["unit_price"],
                 "estimated_total": round(suggested_units * product["unit_price"], 2),

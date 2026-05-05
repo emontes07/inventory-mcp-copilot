@@ -2,7 +2,7 @@
   <header class="widget-header">
     <div>
       <p class="eyebrow">Placeholder form</p>
-      <h2>Edit {{ product.name }}</h2>
+      <h2>Edit {{ product.product_name }}</h2>
     </div>
     <span class="status-pill">Read-only scaffold</span>
   </header>
@@ -10,7 +10,23 @@
   <form class="inventory-form">
     <label>
       Product name
-      <input type="text" value="{{ product.name }}" disabled />
+      <input type="text" value="{{ product.product_name }}" disabled />
+    </label>
+    <label>
+      SKU
+      <input type="text" value="{{ product.sku }}" disabled />
+    </label>
+    <label>
+      Category
+      <input type="text" value="{{ product.category }} / {{ product.subcategory }}" disabled />
+    </label>
+    <label>
+      Color and size range
+      <input type="text" value="{{ product.color }} / {{ product.size_range }}" disabled />
+    </label>
+    <label>
+      Channel
+      <input type="text" value="{{ product.channel }}" disabled />
     </label>
     <label>
       Stock level
@@ -23,6 +39,10 @@
     <label>
       Unit price
       <input type="text" value="{{ "%.2f"|format(product.unit_price) }}" disabled />
+    </label>
+    <label>
+      Stock status
+      <input type="text" value="{{ product.stock_status }}" disabled />
     </label>
     <p class="subtle">This form is present to define the widget contract for future Copilot actions.</p>
   </form>

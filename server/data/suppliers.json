@@ -1,29 +1,56 @@
 [
   {
-    "id": "SUP-001",
-    "name": "Evergreen Imports",
-    "contact_name": "Mina Patel",
-    "email": "mina.patel@evergreen-imports.example",
-    "phone": "+1-555-0101",
-    "country": "USA",
-    "lead_time_days": 5
+    "id": "SUP-201",
+    "name": "Summit Performance Manufacturing",
+    "contact_name": "Mila Santos",
+    "email": "mila.santos@summit-performance.example",
+    "phone": "+1-555-0201",
+    "country": "Vietnam",
+    "lead_time_days": 21
   },
   {
-    "id": "SUP-002",
-    "name": "Harbor Wholesale",
-    "contact_name": "Julian Torres",
-    "email": "julian.torres@harbor-wholesale.example",
-    "phone": "+1-555-0102",
-    "country": "Canada",
-    "lead_time_days": 9
+    "id": "SUP-202",
+    "name": "Harbor Footwear Works",
+    "contact_name": "Jonah Kim",
+    "email": "jonah.kim@harbor-footwear.example",
+    "phone": "+1-555-0202",
+    "country": "Indonesia",
+    "lead_time_days": 24
   },
   {
-    "id": "SUP-003",
-    "name": "Northern Pantry Co.",
-    "contact_name": "Avery Chen",
-    "email": "avery.chen@northernpantry.example",
-    "phone": "+1-555-0103",
+    "id": "SUP-203",
+    "name": "North Ridge Apparel Co.",
+    "contact_name": "Sofia Bennett",
+    "email": "sofia.bennett@northridge-apparel.example",
+    "phone": "+1-555-0203",
+    "country": "Mexico",
+    "lead_time_days": 16
+  },
+  {
+    "id": "SUP-204",
+    "name": "Vertex Teamwear Partners",
+    "contact_name": "Carson Lee",
+    "email": "carson.lee@vertex-teamwear.example",
+    "phone": "+1-555-0204",
+    "country": "Honduras",
+    "lead_time_days": 19
+  },
+  {
+    "id": "SUP-205",
+    "name": "Pinnacle Gear Fabrication",
+    "contact_name": "Priya Nair",
+    "email": "priya.nair@pinnacle-gear.example",
+    "phone": "+1-555-0205",
+    "country": "Taiwan",
+    "lead_time_days": 18
+  },
+  {
+    "id": "SUP-206",
+    "name": "Apex Retail Fixtures",
+    "contact_name": "Ethan Morales",
+    "email": "ethan.morales@apex-fixtures.example",
+    "phone": "+1-555-0206",
     "country": "USA",
-    "lead_time_days": 7
+    "lead_time_days": 12
   }
 ]

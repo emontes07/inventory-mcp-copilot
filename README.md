@@ -1,11 +1,11 @@
 # Inventory IQ
 
-Inventory IQ is a Microsoft 365 Copilot declarative agent demo backed by a remote MCP server for a generic Northwind-style inventory scenario. This repo is intentionally scaffold-first: it gives us a clean starting point for inventory tools, HTML widgets, and Azure deployment without locking us into final business logic too early.
+Inventory IQ is a Microsoft 365 Copilot declarative agent demo backed by a remote MCP server for a fictional Zava Athletic Supply inventory scenario. This repo is intentionally scaffold-first: it gives us a clean starting point for inventory tools, HTML widgets, and Azure deployment without locking us into final business logic too early.
 
 ## Project purpose
 
 - Demonstrate how a Microsoft 365 Copilot declarative agent can call a remote MCP server for inventory workflows.
-- Model a reusable inventory scenario with products, suppliers, stock levels, reorder levels, units on order, unit price, average discount, inventory valuation, and revenue this period.
+- Model a reusable apparel, footwear, and accessories inventory scenario with products, suppliers, stock levels, reorder levels, units on order, unit price, average discount, inventory valuation, and revenue this period.
 - Start with local JSON data and server-rendered HTML widgets so the demo stays easy to understand and easy to evolve.
 
 ## Architecture
@@ -85,10 +85,59 @@ python3 server/main.py
 ```
 
 - The current scaffold uses FastMCP with placeholder inventory tools and local JSON data.
+- The sample company is the fictional brand `Zava Athletic Supply`.
 - `MCP_TRANSPORT` defaults to `stdio`; set it to `http` or `streamable-http` for remote hosting.
 - HTTP mode binds to `0.0.0.0:${PORT}` and is intended for Azure Container Apps or other remote runtimes.
 - Widgets are rendered from files in `server/widgets/`.
 - The widget contract is intentionally simple so we can replace the HTML layer with React later without rewriting the tool shapes.
+
+## Example tool inputs
+
+Use these example arguments when testing the current inventory tools in MCP Inspector or another MCP client:
+
+`list_products`
+
+```json
+{}
+```
+
+`get_product_card` with product ID
+
+```json
+{
+  "product_id": "P-2001"
+}
+```
+
+`get_product_card` with product name
+
+```json
+{
+  "product_name": "Zava Runner Pro"
+}
+```
+
+`get_product_card` with partial query
+
+```json
+{
+  "query": "runner"
+}
+```
+
+`get_edit_product_form` with product name
+
+```json
+{
+  "product_name": "Zava Runner Pro"
+}
+```
+
+`inventory_summary`
+
+```json
+{}
+```
 
 ## Planned Azure Container Apps deployment
 
@@ -112,4 +161,3 @@ instead of:
 http://localhost:8000/mcp
 
 On macOS, some tools resolve localhost to the IPv6 address ::1. If the MCP server is listening on IPv4, this can cause ECONNREFUSED ::1:8000.
-``

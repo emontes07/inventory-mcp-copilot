@@ -1,16 +1,28 @@
 <section class="widget product-card" data-product-id="{{ product.id }}">
   <header class="widget-header">
     <div>
-      <p class="eyebrow">{{ product.category }}</p>
-      <h2>{{ product.name }}</h2>
-      <p class="subtle">{{ product.sku }}</p>
+      <p class="eyebrow">{{ product.category }} · {{ product.subcategory }}</p>
+      <h2>{{ product.product_name }}</h2>
+      <p class="subtle">{{ product.sku }} · {{ product.color }} · {{ product.size_range }}</p>
     </div>
     <span class="status-pill {% if product.stock_level <= product.reorder_level %}status-warning{% else %}status-ok{% endif %}">
-      {% if product.stock_level <= product.reorder_level %}Reorder recommended{% else %}In stock{% endif %}
+      {{ product.stock_status|replace("-", " ")|title }}
     </span>
   </header>
 
   <div class="stats-grid">
+    <div class="stat">
+      <span>Channel</span>
+      <strong>{{ product.channel }}</strong>
+    </div>
+    <div class="stat">
+      <span>Season</span>
+      <strong>{{ product.season }}</strong>
+    </div>
+    <div class="stat">
+      <span>Supplier</span>
+      <strong>{{ product.supplier_name }}</strong>
+    </div>
     <div class="stat">
       <span>Stock level</span>
       <strong>{{ product.stock_level }}</strong>
@@ -32,8 +44,18 @@
       <strong>{{ "%.0f"|format(product.average_discount * 100) }}%</strong>
     </div>
     <div class="stat">
+      <span>Sell-through</span>
+      <strong>{{ "%.0f"|format(product.sell_through_rate * 100) }}%</strong>
+    </div>
+    <div class="stat">
+      <span>Inventory valuation</span>
+      <strong>${{ "%.2f"|format(product.inventory_valuation) }}</strong>
+    </div>
+    <div class="stat">
       <span>Revenue this period</span>
       <strong>${{ "%.2f"|format(product.revenue_this_period) }}</strong>
     </div>
   </div>
+
+  <p class="subtle">{{ product.recommended_action }}</p>
 </section>

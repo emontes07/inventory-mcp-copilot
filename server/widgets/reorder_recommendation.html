@@ -10,8 +10,9 @@
     {% for item in recommendations %}
     <article class="table-row">
       <div>
-        <strong>{{ item.name }}</strong>
-        <p class="subtle">{{ item.id }} · Supplier {{ item.supplier_id }}</p>
+        <strong>{{ item.product_name }}</strong>
+        <p class="subtle">{{ item.id }} · {{ item.supplier_name }}</p>
+        <p class="subtle">{{ item.recommended_action }}</p>
       </div>
       <div class="row-metrics">
         <span>Stock {{ item.stock_level }}</span>
