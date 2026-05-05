@@ -41,15 +41,52 @@ Key directories:
 pip install -r server/requirements.txt
 ```
 
-3. Start the scaffolded MCP server:
+3. For local development, run the server from the `server/` directory.
+
+### STDIO mode
+
+Run the server locally with the default STDIO transport:
 
 ```bash
-python server/main.py
+cd server
+python3 main.py
 ```
 
-Notes:
+Test STDIO mode with MCP Inspector:
+
+```bash
+cd server
+npx @modelcontextprotocol/inspector python3 main.py
+```
+
+### HTTP mode
+
+Run the server locally in remote-style HTTP mode:
+
+```bash
+cd server
+MCP_TRANSPORT=streamable-http PORT=8000 python3 main.py
+```
+
+Test whether HTTP mode is listening:
+
+```bash
+curl -i http://127.0.0.1:8000/mcp/
+```
+
+Any HTTP response means the listener is up. Depending on the request method and FastMCP version, you may see a `200`, `404`, or `405` rather than a full MCP response.
+
+### Notes
+
+If you prefer running from the repo root, use:
+
+```bash
+python3 server/main.py
+```
 
 - The current scaffold uses FastMCP with placeholder inventory tools and local JSON data.
+- `MCP_TRANSPORT` defaults to `stdio`; set it to `http` or `streamable-http` for remote hosting.
+- HTTP mode binds to `0.0.0.0:${PORT}` and is intended for Azure Container Apps or other remote runtimes.
 - Widgets are rendered from files in `server/widgets/`.
 - The widget contract is intentionally simple so we can replace the HTML layer with React later without rewriting the tool shapes.
 
@@ -57,9 +94,22 @@ Notes:
 
 - Package the FastMCP server into a container using `server/Dockerfile`.
 - Deploy the container to Azure Container Apps with the starter files in `infra/`.
-- Configure environment variables for host, port, and transport as the remote MCP hosting model is finalized.
+- Configure `MCP_TRANSPORT=streamable-http` and `PORT=8000` or an Azure-provided port.
 - Connect the public remote MCP endpoint to a Microsoft 365 Copilot declarative agent.
 
 ## Microsoft 365 Copilot note
 
 This project is intended to be connected to a Microsoft 365 Copilot declarative agent through Microsoft 365 Agents Toolkit. The agent definition itself is expected to be created separately, with this repo serving as the MCP backend and implementation reference.
+
+## macOS localhost note
+
+When testing the Streamable HTTP transport locally, use:
+
+http://127.0.0.1:8000/mcp
+
+instead of:
+
+http://localhost:8000/mcp
+
+On macOS, some tools resolve localhost to the IPv6 address ::1. If the MCP server is listening on IPv4, this can cause ECONNREFUSED ::1:8000.
+``

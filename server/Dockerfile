@@ -9,7 +9,8 @@ COPY server ./server
 
 EXPOSE 8000
 
-ENV FASTMCP_TRANSPORT=streamable-http
+ENV MCP_TRANSPORT=streamable-http
+ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "server/main.py"]
+CMD ["python3", "server/main.py"]

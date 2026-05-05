@@ -44,8 +44,12 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           image: containerImage
           env: [
             {
-              name: 'FASTMCP_TRANSPORT'
+              name: 'MCP_TRANSPORT'
               value: 'streamable-http'
+            }
+            {
+              name: 'PORT'
+              value: string(targetPort)
             }
           ]
           resources: {

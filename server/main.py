@@ -51,11 +51,29 @@ def create_server() -> FastMCP:
 mcp = create_server()
 
 
+def run_server() -> None:
+    transport = os.getenv("MCP_TRANSPORT", "stdio").strip().lower()
+    port = int(os.getenv("PORT", "8000"))
+    host = "0.0.0.0"
+
+    if transport == "stdio":
+        print("[inventory-mcp] Starting with STDIO transport", flush=True)
+        mcp.run(transport="stdio")
+        return
+
+    if transport in {"http", "streamable-http"}:
+        print(
+            f"[inventory-mcp] Starting with HTTP transport "
+            f"(requested={transport}, host={host}, port={port}, endpoint=/mcp/)",
+            flush=True,
+        )
+        mcp.run(transport=transport, host=host, port=port)
+        return
+
+    raise ValueError(
+        "Unsupported MCP_TRANSPORT value. Use 'stdio', 'http', or 'streamable-http'."
+    )
+
+
 if __name__ == "__main__":
-    transport = os.getenv("FASTMCP_TRANSPORT", "stdio")
-    try:
-        mcp.run(transport=transport)
-    except TypeError:
-        # Keeps the scaffold usable across FastMCP versions with slightly
-        # different run signatures while we wire up the final remote transport.
-        mcp.run()
+    run_server()
