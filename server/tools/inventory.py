@@ -9,7 +9,51 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
 def _load_products() -> list[dict[str, Any]]:
-    return json.loads((DATA_DIR / "products.json").read_text())
+    products = json.loads((DATA_DIR / "products.json").read_text())
+    return [_normalize_product(product) for product in products]
+
+
+def _normalize_stock_status_code(
+    raw_status: str | None,
+    stock_level: int,
+    reorder_level: int,
+) -> str:
+    normalized = (raw_status or "").strip().lower()
+
+    if normalized in {"out", "out-of-stock", "out of stock"} or stock_level <= 0:
+        return "out"
+
+    if normalized in {"low", "reorder-soon", "reorder soon", "low stock"}:
+        return "low"
+
+    if normalized in {"healthy", "in stock", "in-stock"}:
+        return "healthy"
+
+    if stock_level <= reorder_level:
+        return "low"
+
+    return "healthy"
+
+
+def _normalize_stock_status_label(stock_status_code: str) -> str:
+    labels = {
+        "healthy": "In stock",
+        "low": "Low stock",
+        "out": "Out of stock",
+    }
+    return labels.get(stock_status_code, "In stock")
+
+
+def _normalize_product(product: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(product)
+    stock_status_code = _normalize_stock_status_code(
+        raw_status=str(product.get("stock_status", "")),
+        stock_level=int(product["stock_level"]),
+        reorder_level=int(product["reorder_level"]),
+    )
+    normalized["stock_status_code"] = stock_status_code
+    normalized["stock_status"] = _normalize_stock_status_label(stock_status_code)
+    return normalized
 
 
 def _coerce_lookup_text(value: Any) -> str | None:
@@ -46,16 +90,16 @@ def _build_available_products(products: list[dict[str, Any]]) -> list[dict[str, 
 
 
 def _build_multiple_matches(matches: list[dict[str, Any]]) -> dict[str, Any]:
-    return {
-        "status": "multiple_matches",
-        "message": "Multiple products matched your request.",
-        "matches": [
-            {
-                "product_id": product["id"],
-                "sku": product["sku"],
-                "product_name": product["product_name"],
-                "category": product["category"],
-                "stock_status": product["stock_status"],
+        return {
+            "status": "multiple_matches",
+            "message": "Multiple products matched your request.",
+            "matches": [
+                {
+                    "product_id": product["id"],
+                    "sku": product["sku"],
+                    "product_name": product["product_name"],
+                    "category": product["category"],
+                    "stock_status": product["stock_status"],
             }
             for product in matches
         ],
@@ -136,7 +180,7 @@ def register_inventory_tools(mcp: Any, render_widget: Callable[..., str]) -> Non
             product
             for product in products
             if product["stock_level"] <= product["reorder_level"]
-            or product["stock_status"] in {"low", "reorder-soon"}
+            or product["stock_status_code"] == "low"
         ]
         total_units_on_order = sum(product["units_on_order"] for product in products)
         average_discount = sum(product["average_discount"] for product in products) / max(
@@ -196,10 +240,12 @@ def register_inventory_tools(mcp: Any, render_widget: Callable[..., str]) -> Non
             ]
 
         if stock_status:
+            normalized_filter = stock_status.strip().lower()
             filtered = [
                 product
                 for product in filtered
-                if product["stock_status"].lower() == stock_status.strip().lower()
+                if product["stock_status"].lower() == normalized_filter
+                or product["stock_status_code"] == normalized_filter
             ]
 
         if low_stock_only:

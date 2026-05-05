@@ -76,7 +76,7 @@ body {
   color: var(--warning);
 }
 
-.status-critical {
+.status-danger {
   background: var(--critical-soft);
   color: var(--critical);
 }

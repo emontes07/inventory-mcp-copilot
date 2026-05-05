@@ -1,13 +1,10 @@
 <section class="widget product-card" data-product-id="{{ product.id }}">
-  {% set raw_status = product.stock_status|lower %}
-  {% if raw_status in ["out", "out-of-stock", "out of stock"] or product.stock_level <= 0 %}
-    {% set status_label = "Out of stock" %}
-    {% set status_class = "status-critical" %}
-  {% elif raw_status in ["low", "reorder-soon", "reorder soon", "low stock"] or product.stock_level <= product.reorder_level %}
-    {% set status_label = "Low stock" %}
+  {% set status_label = product.stock_status %}
+  {% if product.stock_status_code == "out" %}
+    {% set status_class = "status-danger" %}
+  {% elif product.stock_status_code == "low" %}
     {% set status_class = "status-warning" %}
   {% else %}
-    {% set status_label = "In stock" %}
     {% set status_class = "status-ok" %}
   {% endif %}
 
@@ -88,7 +85,7 @@
         </div>
         <div class="stat">
           <span>Unit price</span>
-          <strong>${{ "%.2f"|format(product.unit_price) }}</strong>
+          <strong>${{ "{:,.2f}".format(product.unit_price) }}</strong>
         </div>
         <div class="stat">
           <span>Avg. discount</span>
@@ -96,11 +93,11 @@
         </div>
         <div class="stat">
           <span>Inventory valuation</span>
-          <strong>${{ "%.2f"|format(product.inventory_valuation) }}</strong>
+          <strong>${{ "{:,.2f}".format(product.inventory_valuation) }}</strong>
         </div>
         <div class="stat">
           <span>Revenue this period</span>
-          <strong>${{ "%.2f"|format(product.revenue_this_period) }}</strong>
+          <strong>${{ "{:,.2f}".format(product.revenue_this_period) }}</strong>
         </div>
         <div class="stat">
           <span>Sell-through rate</span>
