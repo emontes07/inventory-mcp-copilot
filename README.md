@@ -146,6 +146,42 @@ Use these example arguments when testing the current inventory tools in MCP Insp
 - Configure `MCP_TRANSPORT=streamable-http` and `PORT=8000` or an Azure-provided port.
 - Connect the public remote MCP endpoint to a Microsoft 365 Copilot declarative agent.
 
+## Azure deployment status
+
+- Container App name: `inventory-iq-mcp`
+- Resource group: `rg-inventory-iq-mcp`
+- Azure Container Apps environment: `env-inventory-iq-mcp`
+- MCP endpoint: `https://inventory-iq-mcp.salmonplant-7b75dc6d.westus3.azurecontainerapps.io/mcp`
+
+### Endpoint behavior
+
+- A plain `curl` request against `/mcp` returns HTTP `406`.
+- The `406` response with `Client must accept text/event-stream` is expected.
+- That `406` confirms the MCP route is alive, but it is not a full MCP validation.
+- Use MCP Inspector for real validation with `Transport Type = Streamable HTTP`.
+
+Example:
+
+```bash
+curl -i https://inventory-iq-mcp.salmonplant-7b75dc6d.westus3.azurecontainerapps.io/mcp
+```
+
+### MCP Inspector validation
+
+Use these settings in MCP Inspector:
+
+- URL: `https://inventory-iq-mcp.salmonplant-7b75dc6d.westus3.azurecontainerapps.io/mcp`
+- Transport Type: `Streamable HTTP`
+- Connection Type: `Via Proxy`
+
+After connecting, test `get_product_card` with:
+
+```json
+{
+  "product_name": "Zava Runner Pro"
+}
+```
+
 ## Microsoft 365 Copilot note
 
 This project is intended to be connected to a Microsoft 365 Copilot declarative agent through Microsoft 365 Agents Toolkit. The agent definition itself is expected to be created separately, with this repo serving as the MCP backend and implementation reference.
