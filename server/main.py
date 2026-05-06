@@ -11,11 +11,14 @@ from tools import register_inventory_tools, register_order_tools, register_suppl
 
 SERVER_DIR = Path(__file__).resolve().parent
 WIDGETS_DIR = SERVER_DIR / "widgets"
+STATIC_DIR = SERVER_DIR / "static"
+STYLES_PATH = STATIC_DIR / "styles.css"
 
 templates = Environment(
     loader=FileSystemLoader(WIDGETS_DIR),
     autoescape=select_autoescape(enabled_extensions=("html", "xml")),
 )
+INLINE_STYLES = STYLES_PATH.read_text()
 
 
 def render_widget(template_name: str, **context: Any) -> str:
@@ -27,6 +30,27 @@ def render_widget(template_name: str, **context: Any) -> str:
     """
 
     return templates.get_template(template_name).render(**context)
+
+
+def render_widget_document(template_name: str, *, title: str, **context: Any) -> str:
+    """Render a full HTML document for MCP App UI resources."""
+
+    fragment = render_widget(template_name, **context)
+    return f"""<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <style>
+{INLINE_STYLES}
+    </style>
+  </head>
+  <body>
+    {fragment}
+  </body>
+</html>
+"""
 
 
 def create_server() -> FastMCP:
@@ -42,7 +66,7 @@ def create_server() -> FastMCP:
             "widgets_directory": str(WIDGETS_DIR),
         }
 
-    register_inventory_tools(mcp, render_widget)
+    register_inventory_tools(mcp, render_widget, render_widget_document)
     register_supplier_tools(mcp, render_widget)
     register_order_tools(mcp, render_widget)
     return mcp

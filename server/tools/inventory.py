@@ -5,7 +5,14 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Callable
 
+from fastmcp.resources.base import ResourceContent, ResourceResult
+from fastmcp.tools.base import ToolResult
+from fastmcp.utilities.mime import UI_MIME_TYPE
+from mcp.types import ResourceLink, TextContent
+
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+PRODUCT_CARD_WIDGET_URI = "ui://inventory/product-card/{product_id}"
+INLINE_PRODUCT_CARD_WIDGET_ID = "ui://inventory/product-card.html"
 
 
 def _load_products() -> list[dict[str, Any]]:
@@ -90,16 +97,16 @@ def _build_available_products(products: list[dict[str, Any]]) -> list[dict[str, 
 
 
 def _build_multiple_matches(matches: list[dict[str, Any]]) -> dict[str, Any]:
-        return {
-            "status": "multiple_matches",
-            "message": "Multiple products matched your request.",
-            "matches": [
-                {
-                    "product_id": product["id"],
-                    "sku": product["sku"],
-                    "product_name": product["product_name"],
-                    "category": product["category"],
-                    "stock_status": product["stock_status"],
+    return {
+        "status": "multiple_matches",
+        "message": "Multiple products matched your request.",
+        "matches": [
+            {
+                "product_id": product["id"],
+                "sku": product["sku"],
+                "product_name": product["product_name"],
+                "category": product["category"],
+                "stock_status": product["stock_status"],
             }
             for product in matches
         ],
@@ -112,6 +119,10 @@ def _build_not_found(products: list[dict[str, Any]]) -> dict[str, Any]:
         "message": "No product matched your request.",
         "available_products": _build_available_products(products),
     }
+
+
+def _build_product_card_widget_uri(product_id: str) -> str:
+    return PRODUCT_CARD_WIDGET_URI.format(product_id=product_id)
 
 
 def resolve_product(
@@ -168,7 +179,85 @@ def resolve_product(
     }
 
 
-def register_inventory_tools(mcp: Any, render_widget: Callable[..., str]) -> None:
+def register_inventory_tools(
+    mcp: Any,
+    render_widget: Callable[..., str],
+    render_widget_document: Callable[..., str],
+) -> None:
+    @mcp.resource(
+        PRODUCT_CARD_WIDGET_URI,
+        name="inventory_product_card_widget",
+        title="Inventory Product Card",
+        description="Read-only product detail card for Inventory IQ.",
+        mime_type=UI_MIME_TYPE,
+        app={"prefersBorder": True},
+    )
+    def product_card_widget_resource(product_id: str) -> ResourceResult:
+        products = _load_products()
+        widget_uri = _build_product_card_widget_uri(product_id.strip())
+        product = next(
+            (item for item in products if item["id"].lower() == product_id.strip().lower()),
+            None,
+        )
+
+        if product is None:
+            html = """<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <section class="widget product-card">
+      <header class="widget-header product-card-header">
+        <div class="product-card-title-block">
+          <p class="eyebrow">Inventory IQ · Zava Athletic Supply</p>
+          <div class="product-card-title-row">
+            <h2>Product not found</h2>
+            <span class="status-pill status-danger">Unavailable</span>
+          </div>
+          <p class="product-card-sku">Requested product ID was not found.</p>
+        </div>
+      </header>
+    </section>
+  </body>
+</html>
+"""
+            return ResourceResult(
+                [
+                    ResourceContent(
+                        html,
+                        mime_type=UI_MIME_TYPE,
+                        meta={
+                            "ui": {
+                                "prefersBorder": True,
+                            }
+                        },
+                    )
+                ]
+            )
+
+        html = render_widget_document(
+            "product_card.html",
+            title=f"{product['product_name']} · Inventory IQ",
+            product=product,
+        )
+        return ResourceResult(
+            [
+                ResourceContent(
+                    html,
+                    mime_type=UI_MIME_TYPE,
+                    meta={
+                        "ui": {
+                            "prefersBorder": True,
+                        }
+                    },
+                )
+            ],
+            meta={
+                "ui": {
+                    "resourceUri": widget_uri,
+                    "prefersBorder": True,
+                }
+            },
+        )
+
     @mcp.tool()
     def inventory_summary() -> dict[str, Any]:
         """Return a high-level inventory snapshot."""
@@ -268,12 +357,17 @@ def register_inventory_tools(mcp: Any, render_widget: Callable[..., str]) -> Non
             "count": len(filtered),
         }
 
-    @mcp.tool()
+    @mcp.tool(
+        app={
+            "visibility": ["model"],
+            "prefersBorder": True,
+        }
+    )
     def get_product_card(
         product_id: str | None = None,
         product_name: str | None = None,
         query: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> ToolResult:
         """Return structured product data plus a rendered HTML card widget."""
 
         products = _load_products()
@@ -287,16 +381,47 @@ def register_inventory_tools(mcp: Any, render_widget: Callable[..., str]) -> Non
             return resolution
 
         product = resolution["product"]
-
-        return {
+        widget_uri = _build_product_card_widget_uri(product["id"])
+        inline_widget_document = render_widget_document(
+            "product_card.html",
+            title=f"{product['product_name']} · Inventory IQ",
+            product=product,
+        )
+        structured_payload = {
             "status": "ok",
             "product": product,
-            "widget": {
-                "template": "product_card.html",
-                "framework_hint": "server-rendered-html",
-                "html": render_widget("product_card.html", product=product),
-            },
+            "widget_resource_uri": widget_uri,
         }
+
+        return ToolResult(
+            content=[
+                TextContent(
+                    type="text",
+                    text=f"Product card ready for {product['product_name']}.",
+                ),
+                ResourceLink(
+                    type="resource_link",
+                    name="product_card_widget",
+                    title=f"{product['product_name']} product card",
+                    uri=widget_uri,
+                    description="Renderable Inventory IQ product card widget.",
+                    mimeType=UI_MIME_TYPE,
+                ),
+            ],
+            structured_content=structured_payload,
+            meta={
+                "ui": {
+                    "html": inline_widget_document,
+                    "widget": INLINE_PRODUCT_CARD_WIDGET_ID,
+                    "params": {
+                        "product_id": product["id"],
+                    },
+                    "priority": "primary",
+                    "presentation": "inline",
+                    "prefersBorder": True,
+                }
+            },
+        )
 
     @mcp.tool()
     def get_edit_product_form(
